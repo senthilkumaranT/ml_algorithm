@@ -32,4 +32,3 @@ This folder contains an implementation of the Naive Bayes classification algorit
 - scikit-learn
 - numpy
 
-
