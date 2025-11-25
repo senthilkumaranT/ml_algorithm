@@ -347,3 +347,4 @@ pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 - "The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman
 - "Applied Linear Statistical Models" by Kutner et al.
 
+
