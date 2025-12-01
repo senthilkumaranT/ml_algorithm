@@ -208,6 +208,123 @@ seaborn     # Statistical visualization
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.model_selection import GridSearchCV
+
+# Generate synthetic classification dataset
+x, y = make_classification(n_samples=1000, n_features=2, n_classes=2, 
+                          n_clusters_per_class=2, n_redundant=0, random_state=12)
+
+# Visualize data
+sns.scatterplot(x=pd.DataFrame(x)[0], y=pd.DataFrame(x)[1], hue=y)
+plt.title('Synthetic Classification Dataset')
+plt.show()
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=12)
+
+# Test different kernel functions
+kernels = {
+    "Linear": "linear",
+    "RBF": "rbf",
+    "Polynomial": "poly",
+    "Sigmoid": "sigmoid"
+}
+
+results = {}
+for name, kernel in kernels.items():
+    svc = SVC(kernel=kernel)
+    svc.fit(x_train, y_train)
+    y_pred = svc.predict(x_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    results[name] = accuracy
+    print(f"{name} Kernel Accuracy: {accuracy:.4f}")
+
+# Hyperparameter tuning with GridSearchCV (using best kernel: RBF)
+param_grid = {
+    "C": [0.1, 1, 10, 100],
+    "gamma": [1, 0.1, 0.01, 0.001],
+    "kernel": ["rbf"]
+}
+
+grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=3)
+grid.fit(x_train, y_train)
+
+print(f"\nBest parameters: {grid.best_params_}")
+print(f"Best cross-validation score: {grid.best_score_:.4f}")
+
+# Make predictions with best model
+y_pred = grid.predict(x_test)
+
+# Evaluate model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\nTest Accuracy: {accuracy:.4f}")
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+```
+
+### Code Explanation
+
+**Step 1: Generate Synthetic Data**
+```python
+x, y = make_classification(n_samples=1000, n_features=2, n_classes=2, 
+                          n_clusters_per_class=2, n_redundant=0, random_state=12)
+```
+- Creates 1000 samples with 2 features
+- Binary classification with 2 clusters per class
+- Non-linearly separable data
+
+**Step 2: Visualize Data**
+```python
+sns.scatterplot(x=pd.DataFrame(x)[0], y=pd.DataFrame(x)[1], hue=y)
+```
+- Creates scatter plot colored by class labels
+- Helps understand data distribution
+
+**Step 3: Test Different Kernels**
+```python
+for name, kernel in kernels.items():
+    svc = SVC(kernel=kernel)
+    svc.fit(x_train, y_train)
+```
+- Tests Linear, RBF, Polynomial, and Sigmoid kernels
+- Compares performance across kernels
+
+**Step 4: Hyperparameter Tuning**
+```python
+param_grid = {"C": [0.1, 1, 10, 100], "gamma": [1, 0.1, 0.01, 0.001], "kernel": ["rbf"]}
+grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=3)
+```
+- Uses GridSearchCV for exhaustive parameter search
+- Tests C (regularization) and gamma (kernel coefficient) values
+- Focuses on RBF kernel (best performing)
+
+**Step 5: Model Evaluation**
+```python
+y_pred = grid.predict(x_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(classification_report(y_test, y_pred))
+```
+- Makes predictions with best model
+- Evaluates using accuracy, classification report, and confusion matrix
+
 ## Usage
 1. Open the Jupyter notebook: `Support_vector_machine_classfication.ipynb`
 2. Run all cells sequentially

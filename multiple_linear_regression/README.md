@@ -241,6 +241,159 @@ seaborn     # Statistical visualization
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Load dataset
+df = pd.read_csv('dataset/economic_index.csv')
+
+# Drop unnecessary columns
+df.drop(columns=["Unnamed: 0", "year", "month"], axis=1, inplace=True)
+
+# Check for missing values
+print(df.isnull().sum())
+
+# Visualize relationships
+sns.pairplot(df)
+plt.show()
+
+# Check correlations
+correlation_matrix = df.corr()
+print(correlation_matrix)
+
+# Prepare features and target
+x = df.iloc[:, :-1]  # All columns except last
+y = df.iloc[:, -1]   # Last column (target)
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+
+# Standardize features
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+
+# Initialize and train model
+repr = LinearRegression()
+repr.fit(x_train, y_train)
+
+# Cross-validation
+cv_scores = cross_val_score(repr, x_train, y_train, 
+                           scoring="neg_mean_squared_error", cv=5)
+print(f"Cross-validation scores: {cv_scores}")
+print(f"Mean CV score: {cv_scores.mean():.4f}")
+
+# Make predictions
+y_pred = repr.predict(x_test)
+
+# Calculate evaluation metrics
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"Mean Squared Error: {mse:.4f}")
+print(f"Mean Absolute Error: {mae:.4f}")
+print(f"Root Mean Squared Error: {rmse:.4f}")
+
+# Residual analysis
+residuals = y_test - y_pred
+
+# Visualize actual vs predicted
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.title('Actual vs Predicted')
+plt.show()
+
+# Residual distribution
+sns.displot(residuals, kind="kde")
+plt.title('Residual Distribution')
+plt.show()
+
+# Residual vs predicted plot
+sns.scatterplot(x=y_pred, y=residuals)
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.title('Residuals vs Predicted')
+plt.axhline(y=0, color='r', linestyle='--')
+plt.show()
+```
+
+### Code Explanation
+
+**Step 1: Data Loading and Cleaning**
+```python
+df = pd.read_csv('dataset/economic_index.csv')
+df.drop(columns=["Unnamed: 0", "year", "month"], axis=1, inplace=True)
+```
+- Loads economic index dataset
+- Removes unnecessary columns (index, year, month)
+
+**Step 2: Data Exploration**
+```python
+sns.pairplot(df)
+df.corr()
+```
+- Creates pair plot to visualize all variable relationships
+- Calculates correlation matrix
+
+**Step 3: Feature and Target Separation**
+```python
+x = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+```
+- Separates all features (except last column) and target (last column)
+
+**Step 4: Train-Test Split and Scaling**
+```python
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+```
+- Splits data: 80% training, 20% testing
+- Standardizes features for better model performance
+
+**Step 5: Model Training and Cross-Validation**
+```python
+repr = LinearRegression()
+repr.fit(x_train, y_train)
+cv_scores = cross_val_score(repr, x_train, y_train, scoring="neg_mean_squared_error", cv=5)
+```
+- Trains multiple linear regression model
+- Performs 5-fold cross-validation for robust evaluation
+
+**Step 6: Prediction and Evaluation**
+```python
+y_pred = repr.predict(x_test)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+```
+- Makes predictions and calculates multiple metrics
+
+**Step 7: Residual Analysis**
+```python
+residuals = y_test - y_pred
+sns.displot(residuals, kind="kde")
+sns.scatterplot(x=y_pred, y=residuals)
+```
+- Analyzes residuals to check model assumptions
+- Visualizes residual distribution and patterns
+
 ## Usage
 1. Ensure the dataset file `economic_index.csv` is in the `dataset/` folder
 2. Open the Jupyter notebook: `multiple_linear_regression.ipynb`
@@ -346,5 +499,8 @@ pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 - "An Introduction to Statistical Learning" by James et al.
 - "The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman
 - "Applied Linear Statistical Models" by Kutner et al.
+
+
+
 
 

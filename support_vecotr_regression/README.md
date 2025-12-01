@@ -188,6 +188,149 @@ seaborn     # Statistical visualization and dataset
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import seaborn as sns
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.svm import SVR
+from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
+
+# Load tips dataset
+df = sns.load_dataset('tips')
+
+# Explore data
+print(df.head())
+print(df.info())
+
+# Prepare features and target
+x = df[['tip', 'sex', 'smoker', 'day', 'time', 'size']]
+y = df[['total_bill']]
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+# Label encoding for binary/ordinal categorical features
+le1 = LabelEncoder()
+le2 = LabelEncoder()
+le3 = LabelEncoder()
+
+x_train['sex'] = le1.fit_transform(x_train['sex'])
+x_train['smoker'] = le2.fit_transform(x_train['smoker'])
+x_train['time'] = le3.fit_transform(x_train['time'])
+
+x_test['sex'] = le1.transform(x_test['sex'])
+x_test['smoker'] = le2.transform(x_test['smoker'])
+x_test['time'] = le3.transform(x_test['time'])
+
+# One-hot encoding for nominal categorical features (day)
+ct = ColumnTransformer(
+    transformers=[('encoder', OneHotEncoder(drop='first'), [3])], 
+    remainder='passthrough'
+)
+
+x_train_encoded = ct.fit_transform(x_train)
+x_test_encoded = ct.transform(x_test)
+
+# Initialize and train SVR model
+svr = SVR()
+svr.fit(x_train_encoded, y_train.values.ravel())
+
+# Make predictions
+y_pred = svr.predict(x_test_encoded)
+
+# Evaluate model
+r2 = r2_score(y_test, y_pred)
+print(f"R² Score: {r2:.4f}")
+
+# Hyperparameter tuning with GridSearchCV
+para_grid = {
+    'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    'C': [1, 5, 10],
+    'gamma': ['scale', 'auto']
+}
+
+grid_search = GridSearchCV(estimator=svr, param_grid=para_grid, cv=5)
+grid_search.fit(x_train_encoded, y_train.values.ravel())
+
+print(f"\nBest parameters: {grid_search.best_params_}")
+print(f"Best cross-validation score: {grid_search.best_score_:.4f}")
+
+# Make predictions with best model
+y_pred_tuned = grid_search.predict(x_test_encoded)
+
+# Evaluate tuned model
+r2_tuned = r2_score(y_test, y_pred_tuned)
+print(f"\nTuned Model R² Score: {r2_tuned:.4f}")
+```
+
+### Code Explanation
+
+**Step 1: Load and Explore Data**
+```python
+df = sns.load_dataset('tips')
+print(df.head())
+```
+- Loads tips dataset from seaborn
+- Explores data structure and statistics
+
+**Step 2: Feature Selection**
+```python
+x = df[['tip', 'sex', 'smoker', 'day', 'time', 'size']]
+y = df[['total_bill']]
+```
+- Selects features for prediction
+- Sets total_bill as target variable
+
+**Step 3: Categorical Feature Encoding**
+```python
+# Label encoding for binary features
+x_train['sex'] = le1.fit_transform(x_train['sex'])
+
+# One-hot encoding for nominal features
+ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(drop='first'), [3])])
+```
+- Uses LabelEncoder for binary/ordinal features (sex, smoker, time)
+- Uses OneHotEncoder for nominal features (day)
+- ColumnTransformer ensures consistent preprocessing
+
+**Step 4: Model Training**
+```python
+svr = SVR()
+svr.fit(x_train_encoded, y_train.values.ravel())
+```
+- Initializes SVR with default parameters
+- Trains model on encoded features
+- Uses `.ravel()` to convert 2D target to 1D
+
+**Step 5: Hyperparameter Tuning**
+```python
+para_grid = {
+    'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    'C': [1, 5, 10],
+    'gamma': ['scale', 'auto']
+}
+grid_search = GridSearchCV(estimator=svr, param_grid=para_grid, cv=5)
+```
+- Tests multiple kernel functions
+- Tunes C (regularization) and gamma (kernel coefficient)
+- Uses 5-fold cross-validation
+
+**Step 6: Model Evaluation**
+```python
+r2 = r2_score(y_test, y_pred)
+```
+- Evaluates using R² score (coefficient of determination)
+- Compares default vs tuned model performance
+
 ## Usage
 1. Open the Jupyter notebook: `Support_vector_machine_Regression.ipynb`
 2. Run all cells sequentially

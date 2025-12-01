@@ -153,6 +153,89 @@ numpy         # Numerical computing
 pip install scikit-learn numpy jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load Iris dataset
+x, y = load_iris(return_X_y=True)
+
+# Split data into training and testing sets
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+
+# Initialize Gaussian Naive Bayes classifier
+gnb = GaussianNB()
+
+# Train the model
+gnb.fit(x_train, y_train)
+
+# Make predictions
+y_pred = gnb.predict(x_test)
+
+# Evaluate model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.4f}")
+
+# Classification report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Confusion matrix
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+```
+
+### Code Explanation
+
+**Step 1: Load Dataset**
+```python
+from sklearn.datasets import load_iris
+x, y = load_iris(return_X_y=True)
+```
+- Loads Iris dataset (150 samples, 4 features, 3 classes)
+- Returns features (x) and target labels (y)
+
+**Step 2: Train-Test Split**
+```python
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+```
+- Splits data: 80% training (120 samples), 20% testing (30 samples)
+- Random split ensures different samples each run
+
+**Step 3: Initialize and Train Model**
+```python
+gnb = GaussianNB()
+gnb.fit(x_train, y_train)
+```
+- Creates Gaussian Naive Bayes classifier
+- Trains model by estimating:
+  - Prior probabilities for each class
+  - Mean and variance for each feature-class combination
+
+**Step 4: Make Predictions**
+```python
+y_pred = gnb.predict(x_test)
+```
+- Predicts class labels for test samples
+- Uses Bayes' theorem with Gaussian probability distributions
+
+**Step 5: Evaluate Model**
+```python
+accuracy = accuracy_score(y_test, y_pred)
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+```
+- Calculates accuracy (proportion of correct predictions)
+- Generates detailed classification report (precision, recall, F1-score)
+- Creates confusion matrix showing prediction breakdown
+
 ## Usage
 1. Open the Jupyter notebook: `NAVIE_BAYES_THEOREM.ipynb`
 2. Run all cells sequentially

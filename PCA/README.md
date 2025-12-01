@@ -157,6 +157,100 @@ pip install pandas numpy scikit-learn matplotlib seaborn jupyter
    - Apply PCA with 2 components
    - Visualize the transformed data
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# Load the Breast Cancer dataset
+Cancer_data = load_breast_cancer()
+
+# Create DataFrame from the data
+data = pd.DataFrame(Cancer_data["data"], columns=Cancer_data["feature_names"])
+
+# Standardize the features
+scaler = StandardScaler()
+scaler.fit(data)
+scaled_data = scaler.transform(data)
+
+# Apply PCA with 2 components
+pca = PCA(n_components=2)
+data_pca = pca.fit_transform(scaled_data)
+
+# Visualize the results
+plt.figure(figsize=(8, 6))
+plt.scatter(x=data_pca[:, 0], y=data_pca[:, 1], c=Cancer_data["target"], cmap="plasma")
+plt.title("Breast Cancer Dataset PCA")
+plt.xlabel("First Principal Component")
+plt.ylabel("Second Principal Component")
+plt.colorbar(label="Target (0=Malignant, 1=Benign)")
+plt.show()
+```
+
+### Code Explanation
+
+**Step 1: Import Libraries**
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+```
+- `pandas` and `numpy` for data manipulation
+- `matplotlib` and `seaborn` for visualization
+- `sklearn` for dataset, preprocessing, and PCA implementation
+
+**Step 2: Load Dataset**
+```python
+Cancer_data = load_breast_cancer()
+data = pd.DataFrame(Cancer_data["data"], columns=Cancer_data["feature_names"])
+```
+- Loads the Breast Cancer Wisconsin dataset
+- Creates a pandas DataFrame with 569 samples and 30 features
+
+**Step 3: Standardize Features**
+```python
+scaler = StandardScaler()
+scaler.fit(data)
+scaled_data = scaler.transform(data)
+```
+- Standardizes features to have mean=0 and std=1
+- Essential for PCA as it's sensitive to feature scales
+
+**Step 4: Apply PCA**
+```python
+pca = PCA(n_components=2)
+data_pca = pca.fit_transform(scaled_data)
+```
+- Reduces 30 features to 2 principal components
+- `fit_transform()` computes components and transforms data in one step
+
+**Step 5: Visualize Results**
+```python
+plt.figure(figsize=(8, 6))
+plt.scatter(x=data_pca[:, 0], y=data_pca[:, 1], c=Cancer_data["target"], cmap="plasma")
+plt.title("Breast Cancer Dataset PCA")
+plt.xlabel("First Principal Component")
+plt.ylabel("Second Principal Component")
+plt.colorbar(label="Target (0=Malignant, 1=Benign)")
+plt.show()
+```
+- Creates a 2D scatter plot of the transformed data
+- Colors points by target labels (Malignant/Benign)
+- Shows how well PCA preserves class separation
+
 ## Advantages of PCA
 - **Dimensionality Reduction**: Reduces number of features
 - **Noise Reduction**: Removes noise by focusing on principal components

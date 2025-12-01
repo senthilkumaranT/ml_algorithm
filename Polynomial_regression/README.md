@@ -144,6 +144,118 @@ matplotlib  # Data visualization
 pip install numpy pandas scikit-learn matplotlib jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+# Generate synthetic data with quadratic relationship
+x = 6 * np.random.rand(100, 1) - 3  # x values from -3 to 3
+y = 0.5 * x**2 + 1.5*x + 2 + np.random.randn(100, 1)  # y = 0.5x² + 1.5x + 2 + noise
+
+# Visualize original data
+plt.scatter(x, y, color="g", label="Data Points")
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Original Data (Quadratic Relationship)')
+plt.legend()
+plt.show()
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+# Step 1: Try Linear Regression (Baseline)
+regression_1 = LinearRegression()
+regression_1.fit(X_train, y_train)
+
+# Visualize linear regression fit
+plt.scatter(X_train, y_train, label="Training Data")
+plt.plot(X_train, regression_1.predict(X_train), color='r', label='Linear Regression')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Linear Regression (Baseline)')
+plt.legend()
+plt.show()
+
+# Step 2: Create Polynomial Features
+poly = PolynomialFeatures(degree=2, include_bias=True)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+# Step 3: Train Polynomial Regression
+regression = LinearRegression()
+regression.fit(X_train_poly, y_train)
+
+# Make predictions
+y_pred = regression.predict(X_test_poly)
+
+# Visualize polynomial regression fit
+plt.scatter(X_train, y_train, label="Training Data", alpha=0.6)
+plt.scatter(X_train, regression.predict(X_train_poly), 
+           color='blue', label='Polynomial Regression', alpha=0.6)
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Polynomial Regression (Degree=2)')
+plt.legend()
+plt.show()
+
+# Display model coefficients
+print("Polynomial Regression Coefficients:")
+print(f"Intercept (β₀): {regression.intercept_[0]:.4f}")
+print(f"Coefficients: {regression.coef_[0]}")
+```
+
+### Code Explanation
+
+**Step 1: Generate Synthetic Data**
+```python
+x = 6 * np.random.rand(100, 1) - 3
+y = 0.5 * x**2 + 1.5*x + 2 + np.random.randn(100, 1)
+```
+- Creates 100 data points with x values from -3 to 3
+- Generates y using quadratic relationship: y = 0.5x² + 1.5x + 2 + noise
+- Noise makes the problem more realistic
+
+**Step 2: Baseline - Linear Regression**
+```python
+regression_1 = LinearRegression()
+regression_1.fit(X_train, y_train)
+```
+- Trains simple linear regression as baseline
+- Cannot capture the quadratic relationship
+- Shows underfitting on non-linear data
+
+**Step 3: Polynomial Feature Transformation**
+```python
+poly = PolynomialFeatures(degree=2, include_bias=True)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+```
+- Transforms features: [x] → [1, x, x²]
+- Creates polynomial features up to degree 2
+- Must transform both training and test sets
+
+**Step 4: Polynomial Regression**
+```python
+regression = LinearRegression()
+regression.fit(X_train_poly, y_train)
+```
+- Trains linear regression on polynomial features
+- Now can capture quadratic relationship
+- Model learns: y = β₀ + β₁x + β₂x²
+
+**Step 5: Visualization and Evaluation**
+- Compares linear vs polynomial regression visually
+- Shows how polynomial regression captures the curve
+- Displays learned coefficients
+
 ## Usage
 1. Open the Python file: `polynomial_regression.py`
 2. Run the script
@@ -262,5 +374,8 @@ For multiple features, the number grows combinatorially:
   - [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 - "An Introduction to Statistical Learning" by James et al.
 - "The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman
+
+
+
 
 

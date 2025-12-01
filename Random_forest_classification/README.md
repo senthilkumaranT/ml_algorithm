@@ -236,6 +236,187 @@ seaborn     # Statistical visualization
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's a comprehensive code implementation:
+
+```python
+# Import required libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import roc_auc_score, recall_score, f1_score, precision_score
+from sklearn.model_selection import RandomizedSearchCV
+
+# Load dataset
+data = pd.read_csv('dataset/Travel.csv')
+
+# Data cleaning - Handle missing values
+# Identify features with missing values
+h_na = [features for features in data.columns if data[features].isnull().sum() >= 1]
+
+# Impute missing values
+data.Age.fillna(data.Age.median(), inplace=True)
+data.TypeofContact.fillna(data.TypeofContact.mode()[0], inplace=True)
+data.DurationOfPitch.fillna(data.DurationOfPitch.median(), inplace=True)
+data.NumberOfFollowups.fillna(data.NumberOfFollowups.mode()[0], inplace=True)
+data.PreferredPropertyStar.fillna(data.PreferredPropertyStar.median(), inplace=True)
+data.NumberOfTrips.fillna(data.NumberOfTrips.median(), inplace=True)
+data.NumberOfChildrenVisiting.fillna(data.NumberOfChildrenVisiting.mode()[0], inplace=True)
+data.MonthlyIncome.fillna(data.MonthlyIncome.median(), inplace=True)
+
+# Standardize categorical values
+data["Gender"] = data["Gender"].replace("Fe Male", "female")
+
+# Drop unnecessary columns
+data.drop(['CustomerID'], axis=1, inplace=True)
+
+# Feature engineering
+data["Total_visit"] = data["NumberOfChildrenVisiting"] + data["NumberOfPersonVisiting"]
+data.drop(["NumberOfChildrenVisiting", "NumberOfPersonVisiting"], axis=1, inplace=True)
+
+# Prepare features and target
+x = data.drop(["ProdTaken"], axis=1)
+y = data["ProdTaken"]
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+# Identify categorical and numerical features
+cat_feature = x.select_dtypes(include="object").columns
+num_feature = x.select_dtypes(exclude="object").columns
+
+# Create preprocessing pipeline
+numeric_transformer = StandardScaler()
+cat_transformer = OneHotEncoder(drop="first")
+
+preprocessor = ColumnTransformer(
+    [
+        ("StandardScaler", numeric_transformer, num_feature),
+        ("OneHotEncoder", cat_transformer, cat_feature)
+    ]
+)
+
+# Apply preprocessing
+x_train = preprocessor.fit_transform(x_train)
+x_test = preprocessor.transform(x_test)
+
+# Model comparison
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Decision Tree": DecisionTreeClassifier(),
+    "Random Forest": RandomForestClassifier()
+}
+
+for name, model in models.items():
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"{name} Accuracy: {accuracy:.4f}")
+
+# Hyperparameter tuning for Random Forest
+rf_params = {
+    "max_depth": [5, 8, 15, None, 10],
+    "max_features": [5, 7, "auto", 10],
+    "min_samples_split": [8, 10, 20],
+    "n_estimators": [10, 100, 200, 500]
+}
+
+random = RandomizedSearchCV(
+    estimator=RandomForestClassifier(),
+    param_distributions=rf_params,
+    n_iter=100,
+    cv=3,
+    verbose=2,
+    n_jobs=-1
+)
+random.fit(x_train, y_train)
+
+print(f"Best parameters: {random.best_params_}")
+
+# Train final model with best parameters
+best_rf = RandomForestClassifier(**random.best_params_)
+best_rf.fit(x_train, y_train)
+y_pred = best_rf.predict(x_test)
+
+# Evaluate final model
+accuracy = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_pred)
+
+print(f"\nFinal Model Performance:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"F1 Score: {f1:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"ROC AUC: {roc_auc:.4f}")
+```
+
+### Code Explanation
+
+**Step 1: Data Loading and Cleaning**
+```python
+data = pd.read_csv('dataset/Travel.csv')
+data.Age.fillna(data.Age.median(), inplace=True)
+```
+- Loads travel dataset
+- Imputes missing values using median (numerical) or mode (categorical)
+
+**Step 2: Feature Engineering**
+```python
+data["Total_visit"] = data["NumberOfChildrenVisiting"] + data["NumberOfPersonVisiting"]
+```
+- Creates new features by combining existing ones
+- Removes redundant features
+
+**Step 3: Preprocessing Pipeline**
+```python
+preprocessor = ColumnTransformer([
+    ("StandardScaler", numeric_transformer, num_feature),
+    ("OneHotEncoder", cat_transformer, cat_feature)
+])
+```
+- Applies StandardScaler to numerical features
+- Applies OneHotEncoder to categorical features
+- Uses ColumnTransformer for efficient preprocessing
+
+**Step 4: Model Comparison**
+```python
+models = {"Logistic Regression": LogisticRegression(), ...}
+for name, model in models.items():
+    model.fit(x_train, y_train)
+```
+- Compares multiple models
+- Evaluates baseline performance
+
+**Step 5: Hyperparameter Tuning**
+```python
+random = RandomizedSearchCV(estimator=RandomForestClassifier(), ...)
+random.fit(x_train, y_train)
+```
+- Uses RandomizedSearchCV for efficient parameter search
+- Tests multiple hyperparameter combinations
+
+**Step 6: Final Model Evaluation**
+```python
+best_rf = RandomForestClassifier(**random.best_params_)
+accuracy = accuracy_score(y_test, y_pred)
+```
+- Trains model with best parameters
+- Evaluates using multiple metrics
+
 ## Usage
 1. Ensure the dataset file `Travel.csv` is in the `dataset/` folder
 2. Open the Jupyter notebook: `RANDOM_FOREST.ipynb`

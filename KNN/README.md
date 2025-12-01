@@ -106,6 +106,94 @@ seaborn     # Statistical visualization
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+
+# Generate synthetic classification dataset
+x, y = make_classification(n_samples=1000, n_features=5, n_classes=2, random_state=123)
+
+# Split data into training and testing sets
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=123)
+
+# Initialize KNN classifier with k=5
+knn = KNeighborsClassifier(n_neighbors=5)
+
+# Train the model (KNN is lazy learner - just stores the data)
+knn.fit(x_train, y_train)
+
+# Make predictions on test set
+y_pred = knn.predict(x_test)
+
+# Calculate and print accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+```
+
+### Code Explanation
+
+**Step 1: Import Libraries**
+```python
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+```
+- Standard data science libraries for manipulation and visualization
+- scikit-learn for dataset generation, model, and evaluation
+
+**Step 2: Generate Dataset**
+```python
+x, y = make_classification(n_samples=1000, n_features=5, n_classes=2, random_state=123)
+```
+- Creates synthetic binary classification dataset
+- 1000 samples with 5 features
+- Random state ensures reproducibility
+
+**Step 3: Train-Test Split**
+```python
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=123)
+```
+- Splits data: 80% training (800 samples), 20% testing (200 samples)
+- Random state ensures consistent splits
+
+**Step 4: Initialize and Train Model**
+```python
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(x_train, y_train)
+```
+- Creates KNN classifier with k=5 (5 nearest neighbors)
+- `fit()` method stores training data (lazy learning)
+
+**Step 5: Make Predictions**
+```python
+y_pred = knn.predict(x_test)
+```
+- For each test point, finds 5 nearest neighbors
+- Assigns majority class among neighbors
+
+**Step 6: Evaluate Model**
+```python
+accuracy = accuracy_score(y_test, y_pred)
+```
+- Calculates proportion of correct predictions
+- Returns value between 0 and 1
+
 ## Usage
 1. Open the Jupyter notebook: `KNN_algorithm.ipynb`
 2. Run all cells sequentially

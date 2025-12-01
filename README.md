@@ -7,6 +7,7 @@ This repository contains comprehensive implementations of various machine learni
 
 ```
 ml_algorithm/
+├── clustering/                   # Clustering Algorithms (K-Means, Hierarchical, DBSCAN)
 ├── KNN/                          # K-Nearest Neighbors Classification
 ├── Navie_bayes/                  # Naive Bayes Classification
 ├── Random_forest_classification/ # Random Forest Classification
@@ -15,27 +16,57 @@ ml_algorithm/
 ├── support_vector_classification/# Support Vector Classification
 ├── Linear_regression/            # Linear Regression
 ├── multiple_linear_regression/   # Multiple Linear Regression
-└── Polynomial_regression/        # Polynomial Regression
+├── Polynomial_regression/        # Polynomial Regression
+└── PCA/                          # Principal Component Analysis
 ```
 
 ## Algorithms Implemented
 
+### Clustering Algorithms (Unsupervised)
+
+#### 1. **K-Means Clustering**
+- **Location**: `clustering/`
+- **Technique**: Centroid-based clustering
+- **Features**: 
+  - Elbow method for optimal k selection
+  - Silhouette score analysis
+  - Automatic elbow detection using KneeLocator
+- **Dataset**: Synthetic blob dataset (150 samples, 2 features, 3 clusters)
+
+#### 2. **Hierarchical Clustering (Agglomerative)**
+- **Location**: `clustering/`
+- **Technique**: Bottom-up hierarchical clustering
+- **Features**:
+  - Dendrogram visualization
+  - Ward linkage method
+  - PCA for dimensionality reduction
+- **Dataset**: Iris dataset (reduced to 2D using PCA)
+
+#### 3. **DBSCAN (Density-Based Clustering)**
+- **Location**: `clustering/`
+- **Technique**: Density-based clustering with noise detection
+- **Features**:
+  - Automatic cluster detection
+  - Outlier/noise identification
+  - Handles non-spherical clusters
+- **Dataset**: Synthetic moon-shaped dataset (1000 samples, 2 features)
+
 ### Classification Algorithms
 
-#### 1. **K-Nearest Neighbors (KNN)**
+#### 4. **K-Nearest Neighbors (KNN)**
 - **Location**: `KNN/`
 - **Technique**: Instance-based learning algorithm
 - **Features**: Binary classification with k=5 neighbors
 - **Accuracy**: Evaluated using accuracy score
 
-#### 2. **Naive Bayes**
+#### 5. **Naive Bayes**
 - **Location**: `Navie_bayes/`
 - **Technique**: Gaussian Naive Bayes
 - **Features**: Multi-class classification on Iris dataset
 - **Accuracy**: ~96.67%
 - **Evaluation**: Accuracy, classification report, confusion matrix
 
-#### 3. **Logistic Regression**
+#### 6. **Logistic Regression**
 - **Location**: `logistic_regression/`
 - **Technique**: Logistic Regression with various configurations
 - **Features**:
@@ -46,7 +77,7 @@ ml_algorithm/
   - Hyperparameter tuning (GridSearchCV, RandomizedSearchCV)
 - **Accuracy**: 91% (binary), 59% (multiclass), 98.85% (imbalanced)
 
-#### 4. **Random Forest Classification**
+#### 7. **Random Forest Classification**
 - **Location**: `Random_forest_classification/`
 - **Technique**: Ensemble learning with multiple decision trees
 - **Features**:
@@ -57,7 +88,7 @@ ml_algorithm/
 - **Accuracy**: 90.90%
 - **Best Model**: Random Forest with optimized hyperparameters
 
-#### 5. **Support Vector Classification (SVC)**
+#### 8. **Support Vector Classification (SVC)**
 - **Location**: `support_vector_classification/`
 - **Technique**: Support Vector Machine for classification
 - **Features**:
@@ -68,7 +99,7 @@ ml_algorithm/
 
 ### Regression Algorithms
 
-#### 6. **Support Vector Regression (SVR)**
+#### 9. **Support Vector Regression (SVR)**
 - **Location**: `support_vecotr_regression/`
 - **Technique**: Support Vector Machine for regression
 - **Features**:
@@ -77,17 +108,28 @@ ml_algorithm/
   - Hyperparameter tuning
 - **Evaluation**: R² score
 
-#### 7. **Linear Regression**
+#### 10. **Linear Regression**
 - **Location**: `Linear_regression/`
 - **Technique**: Simple linear regression
 - **Dataset**: Height-weight dataset
 
-#### 8. **Multiple Linear Regression**
+#### 11. **Multiple Linear Regression**
 - **Location**: `multiple_linear_regression/`
 - **Technique**: Multiple linear regression with multiple features
 - **Dataset**: Economic index dataset
 
-#### 9. **Polynomial Regression**
+#### 12. **Polynomial Regression**
+
+### Dimensionality Reduction
+
+#### 13. **Principal Component Analysis (PCA)**
+- **Location**: `PCA/`
+- **Technique**: Linear dimensionality reduction
+- **Features**:
+  - Reduces 30 features to 2 principal components
+  - Variance preservation
+  - 2D visualization of high-dimensional data
+- **Dataset**: Breast Cancer Wisconsin dataset (569 samples, 30 features)
 - **Location**: `Polynomial_regression/`
 - **Technique**: Polynomial regression for non-linear relationships
 
@@ -161,12 +203,16 @@ jupyter notebook KNN_algorithm.ipynb
 
 | Algorithm | Task Type | Best Accuracy/R² | Dataset |
 |-----------|-----------|------------------|---------|
+| K-Means | Clustering | Optimal k found | Synthetic Blobs |
+| Hierarchical | Clustering | 2 clusters | Iris |
+| DBSCAN | Clustering | Auto-detected | Synthetic Moons |
 | KNN | Classification | Evaluated | Synthetic |
 | Naive Bayes | Classification | 96.67% | Iris |
 | Logistic Regression | Classification | 91% (binary) | Synthetic |
 | Random Forest | Classification | 90.90% | Travel |
 | SVC | Classification | 90% | Synthetic |
 | SVR | Regression | Evaluated | Tips |
+| PCA | Dimensionality Reduction | 2 components | Breast Cancer |
 
 ## Notes
 

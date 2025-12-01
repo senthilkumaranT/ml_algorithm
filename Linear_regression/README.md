@@ -203,6 +203,151 @@ seaborn     # Statistical visualization
 pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 ```
 
+## Code Example
+
+Here's the complete code implementation:
+
+```python
+# Import required libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Load dataset
+df = pd.read_csv('dataset/height-weight.csv')
+
+# Explore data
+print(df.head())
+print(df.info())
+print(df.isnull().sum())
+
+# Visualize data
+plt.scatter(df['Height'], df['Weight'])
+plt.xlabel('Height')
+plt.ylabel('Weight')
+plt.title('Height vs Weight')
+plt.show()
+
+# Check correlation
+correlation = df.corr()
+print(correlation)
+
+# Prepare features and target
+x = df[["Weight"]]
+y = df[["Height"]]
+
+# Split data into training and testing sets
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+
+# Standardize features
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+
+# Initialize and train Linear Regression model
+regression = LinearRegression()
+regression.fit(x_train, y_train)
+
+# Visualize training data with regression line
+plt.scatter(x_train, y_train, color='red', label='Training Data')
+plt.plot(x_train, regression.predict(x_train), color='blue', label='Regression Line')
+plt.xlabel('Weight (scaled)')
+plt.ylabel('Height')
+plt.title('Linear Regression - Training Data')
+plt.legend()
+plt.show()
+
+# Make predictions on test data
+y_pred = regression.predict(x_test)
+
+# Calculate evaluation metrics
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"Mean Squared Error: {mse:.4f}")
+print(f"Mean Absolute Error: {mae:.4f}")
+print(f"Root Mean Squared Error: {rmse:.4f}")
+
+# Display model coefficients
+print(f"Intercept (β₀): {regression.intercept_[0]:.4f}")
+print(f"Coefficient (β₁): {regression.coef_[0][0]:.4f}")
+```
+
+### Code Explanation
+
+**Step 1: Data Loading and Exploration**
+```python
+df = pd.read_csv('dataset/height-weight.csv')
+df.head()
+df.info()
+```
+- Loads height-weight dataset from CSV
+- Examines data structure and basic statistics
+- Checks for missing values
+
+**Step 2: Data Visualization**
+```python
+plt.scatter(df['Height'], df['Weight'])
+df.corr()
+```
+- Creates scatter plot to visualize relationship
+- Calculates correlation coefficient
+- Helps understand linearity of relationship
+
+**Step 3: Data Preprocessing**
+```python
+x = df[["Weight"]]
+y = df[["Height"]]
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+```
+- Separates features (Weight) and target (Height)
+- Splits data: 80% training, 20% testing
+
+**Step 4: Feature Scaling**
+```python
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+```
+- Standardizes features to have mean=0 and std=1
+- Improves numerical stability
+- Fit on training data only to prevent data leakage
+
+**Step 5: Model Training**
+```python
+regression = LinearRegression()
+regression.fit(x_train, y_train)
+```
+- Initializes Linear Regression model
+- Trains model using Ordinary Least Squares (OLS)
+- Learns intercept and coefficient
+
+**Step 6: Visualization of Fit**
+```python
+plt.scatter(x_train, y_train, color='red')
+plt.plot(x_train, regression.predict(x_train), color='blue')
+```
+- Plots training data points
+- Overlays regression line
+- Visualizes how well model fits the data
+
+**Step 7: Prediction and Evaluation**
+```python
+y_pred = regression.predict(x_test)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+```
+- Makes predictions on test set
+- Calculates multiple evaluation metrics
+- Provides comprehensive performance assessment
+
 ## Usage
 1. Ensure the dataset file `height-weight.csv` is in the `dataset/` folder
 2. Open the Jupyter notebook: `linear_regression.ipynb`
@@ -287,5 +432,8 @@ pip install pandas numpy scikit-learn matplotlib seaborn jupyter
 - Scikit-learn Documentation: [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 - "An Introduction to Statistical Learning" by James et al.
 - "The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman
+
+
+
 
 
